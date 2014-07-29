@@ -60,6 +60,11 @@ public class ImageLoader {
 
 	private ImageLoaderConfiguration configuration;
 	private ImageLoaderEngine engine;
+	
+	public static String username=null;
+	public static String password =null;
+	public static String host =null;
+	public static boolean isCredentialsOn = false;
 
 	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
 
@@ -76,6 +81,24 @@ public class ImageLoader {
 		}
 		return instance;
 	}
+	
+	/** Returns singleton class instance if server credentials are on */
+	public static ImageLoader getInstance(String username, String password, String host) {
+		
+		ImageLoader.username = username;
+		ImageLoader.password = password;
+		ImageLoader.host = host;
+		ImageLoader.isCredentialsOn = true;
+		
+		if (instance == null) {
+			synchronized (ImageLoader.class) {
+				if (instance == null) {
+					instance = new ImageLoader();
+				}
+			}
+		}
+		return instance;
+	}	
 
 	protected ImageLoader() {
 	}

@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
@@ -37,6 +38,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URI from network or file system or app resources.<br />
@@ -141,6 +144,15 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected HttpURLConnection createConnection(String url, Object extra) throws IOException {
 		String encodedUrl = Uri.encode(url, ALLOWED_URI_CHARS);
 		HttpURLConnection conn = (HttpURLConnection) new URL(encodedUrl).openConnection();
+		
+		if(ImageLoader.isCredentialsOn)
+		{
+			String userpass = ImageLoader.username+":"+ImageLoader.password;
+			byte[] authEncBytes  = Base64.encodeBase64(userpass.getBytes());
+			String authStringEnc = new String(authEncBytes);
+			conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
+		}
+		
 		conn.setConnectTimeout(connectTimeout);
 		conn.setReadTimeout(readTimeout);
 		return conn;
